@@ -15,48 +15,15 @@ const DashboardPage: React.FC = () => {
   const { paths, loading: pathsLoading, searchPaths } = usePaths();
   const { recommendations } = useAI();
 
-  // State for enrolled paths
-  const [enrolledPaths, setEnrolledPaths] = useState<string[]>([]);
-
   // Redirect if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // Load enrolled paths from localStorage and initial data
+  // Load initial data
   useEffect(() => {
-    const storedEnrolledPaths = localStorage.getItem('enrolledPaths');
-    if (storedEnrolledPaths) {
-      try {
-        const parsed = JSON.parse(storedEnrolledPaths);
-        setEnrolledPaths(parsed);
-      } catch (error) {
-        console.error('Error parsing enrolled paths:', error);
-      }
-    }
-
     searchPaths({ limit: 6 });
   }, [searchPaths]);
-
-  // Handle path enrollment
-  const handleEnroll = async (pathId: string) => {
-    try {
-      // Here you would typically call an enrollment API
-      // For now, we'll simulate enrollment locally with localStorage persistence
-      const updatedEnrolledPaths = [...enrolledPaths, pathId];
-      setEnrolledPaths(updatedEnrolledPaths);
-
-      // Persist to localStorage
-      localStorage.setItem('enrolledPaths', JSON.stringify(updatedEnrolledPaths));
-
-      console.log(`User enrolled in path: ${pathId}`);
-
-      // You could also show a success message or redirect
-      // For now, just log the enrollment
-    } catch (error) {
-      console.error('Error enrolling in path:', error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-secondary-50">
@@ -159,8 +126,6 @@ const DashboardPage: React.FC = () => {
                 <PathCard
                   key={path.id}
                   path={path}
-                  onEnroll={handleEnroll}
-                  isEnrolled={enrolledPaths.includes(path.id)}
                 />
               ))}
             </div>

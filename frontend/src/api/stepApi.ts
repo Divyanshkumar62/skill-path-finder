@@ -3,11 +3,12 @@ import { api } from './apiClient';
 // Types for step API
 export interface Step {
   id: string;
-  title: string; // Changed from 'name' to match backend
+  name: string;
   description: string;
   content?: string; // Added content field
-  pathId: string; // Changed from 'path' to match backend
+  path: string;
   order: number;
+  resourceLinks?: string[];
   completedBy?: string[];
   completionCount?: number;
   createdAt: string;

@@ -109,7 +109,7 @@ export class StepService {
         id,
         { ...updateData, updatedAt: new Date() },
         { new: true, runValidators: true }
-      ).populate("pathId", "title category");
+      ).populate("path", "title category");
 
       if (!step) {
         const error = new Error("Step not found") as CustomError;
@@ -158,7 +158,7 @@ export class StepService {
       }
 
       // Remove step from path's steps array
-      await Path.findByIdAndUpdate(step.pathId, {
+      await Path.findByIdAndUpdate(step.path, {
         $pull: { steps: step._id },
       });
 
@@ -215,7 +215,7 @@ export class StepService {
         stepId,
         { $push: { completedBy: userObjectId } },
         { new: true }
-      ).populate("pathId", "title category");
+      ).populate("path", "title category");
 
       return updatedStep;
     } catch (error: any) {
@@ -271,7 +271,7 @@ export class StepService {
         stepId,
         { $pull: { completedBy: userObjectId } },
         { new: true }
-      ).populate("pathId", "title category");
+      ).populate("path", "title category");
 
       return updatedStep;
     } catch (error: any) {
@@ -300,7 +300,7 @@ export class StepService {
     try {
       console.log('StepService: Querying for steps with path ID:', pathId);
 
-      const steps = await Step.find({ pathId: pathId })
+      const steps = await Step.find({ path: pathId })
         .populate("completedBy", "name email")
         .sort({ order: 1 });
 
@@ -310,8 +310,8 @@ export class StepService {
       if (steps.length > 0) {
         console.log('StepService: First step:', {
           id: steps[0]._id,
-          title: steps[0].title,
-          pathId: steps[0].pathId
+          name: steps[0].name,
+          path: steps[0].path
         });
       }
 
@@ -338,7 +338,7 @@ export class StepService {
       console.log('StepService: Getting ALL steps for debugging');
 
       const steps = await Step.find({})
-        .populate("pathId", "title category")
+        .populate("path", "title category")
         .sort({ createdAt: -1 });
 
       console.log('StepService: Found', steps.length, 'total steps in database');
@@ -347,9 +347,9 @@ export class StepService {
       steps.forEach((step, index) => {
         console.log(`Step ${index + 1}:`, {
           id: step._id,
-          title: step.title,
-          pathId: step.pathId,
-          pathTitle: (step as any).pathId?.title || 'Unknown',
+          name: step.name,
+          path: step.path,
+          pathTitle: (step as any).path?.title || 'Unknown',
           order: step.order,
           createdAt: step.createdAt
         });
@@ -370,7 +370,7 @@ export class StepService {
   static async getUserCompletedSteps(userId: string): Promise<IStep[]> {
     try {
       const steps = await Step.find({ completedBy: userId })
-        .populate("pathId", "title category")
+        .populate("path", "title category")
         .sort({ updatedAt: -1 });
 
       return steps;
@@ -407,7 +407,7 @@ export class StepService {
   }> {
     try {
       // Get all steps in the path
-      const allSteps = await Step.find({ pathId: pathId }).sort({ order: 1 });
+      const allSteps = await Step.find({ path: pathId }).sort({ order: 1 });
 
       if (allSteps.length === 0) {
         const error = new Error("No steps found for this path") as CustomError;

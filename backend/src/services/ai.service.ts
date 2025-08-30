@@ -446,7 +446,7 @@ export class AIService {
       // Recent activity (last 10 completed steps)
       const recentActivity = completedSteps.slice(0, 10).map((step) => ({
         pathTitle: (step as any).path.title,
-        stepName: step.title,
+        stepName: step.name,
         completedAt: step.updatedAt,
       }));
 

@@ -14,12 +14,10 @@ const PathDetailPage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { fetchPathById, loading: pathLoading } = usePaths();
   const { fetchSteps, loading: stepsLoading } = useSteps();
-  const { enrollInPath, unenrollFromPath } = usePaths();
 
   const [path, setPath] = useState<any>(null);
   const [steps, setSteps] = useState<any[]>([]);
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [enrolling, setEnrolling] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -36,13 +34,12 @@ const PathDetailPage: React.FC = () => {
 
       try {
         console.log('Loading path data for ID:', id);
-        const pathData = await fetchPathById(id);
-        console.log('Path data received:', pathData);
+        const path = await fetchPathById(id);
+        console.log('Path data received:', path);
 
-        // Set path and enrollment status from API response
-        if (pathData && pathData.path) {
-          setPath(pathData.path);
-          setIsEnrolled(pathData.isEnrolled || false);
+        // Set path data
+        if (path) {
+          setPath(path);
         }
 
         // Load steps for this path
@@ -61,26 +58,11 @@ const PathDetailPage: React.FC = () => {
     }
   }, [id, isAuthenticated, fetchPathById, fetchSteps, navigate]);
 
-  const handleEnroll = async () => {
-    if (!path || !user || !id) return;
-
-    setEnrolling(true);
-    try {
-      await enrollInPath(id);
-      setIsEnrolled(true);
-      console.log(`User ${user.id} enrolled in path ${path.id}`);
-    } catch (error) {
-      console.error('Error enrolling in path:', error);
-    } finally {
-      setEnrolling(false);
-    }
-  };
-
   const handleStartLearning = () => {
     if (steps.length > 0) {
       // Navigate to first step or learning interface
       console.log('Starting learning for path:', path.id);
-      // You could navigate to a step detail page or learning interface
+      navigate(`/paths/${path.id}/steps/${steps[0].id}`);
     }
   };
 
@@ -146,25 +128,13 @@ const PathDetailPage: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-            {!isEnrolled ? (
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleEnroll}
-                loading={enrolling}
-                disabled={enrolling}
-              >
-                {enrolling ? 'Enrolling...' : 'Enroll Now'}
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleStartLearning}
-              >
-                Start Learning
-              </Button>
-            )}
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleStartLearning}
+            >
+              Start Learning
+            </Button>
 
             <Button
               variant="secondary"
@@ -277,16 +247,16 @@ const PathDetailPage: React.FC = () => {
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => navigate(`/paths/${id}/steps/${step.id}`)}
+                      {step.resourceLinks && step.resourceLinks.length > 0 && (
                       >
-                        View Step
+                          Resources: {step.resourceLinks.join(', ')}
                       </Button>
                     </div>
                   </div>
                 ))}
             </div>
           )}
-        </div>
+                      {step.name || 'Untitled Step'}
       </main>
 
       <Footer />

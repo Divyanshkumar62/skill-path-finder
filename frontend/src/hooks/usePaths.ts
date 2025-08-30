@@ -34,9 +34,9 @@ export function usePaths() {
     try {
       setLoading(true);
       setError(null);
-      const result = await pathApi.getPathById(id);
-      setCurrentPath(result.path);
-      return result;
+      const path = await pathApi.getPathById(id);
+      setCurrentPath(path);
+      return path;
     } catch (err: any) {
       const errorMessage = err.message || 'Failed to fetch path';
       setError(errorMessage);
@@ -163,55 +163,6 @@ export function usePaths() {
     try {
       setLoading(true);
       setError(null);
-      const result = await pathApi.enrollInPath(pathId);
-      return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to enroll in path';
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Unenroll from a path
-  const unenrollFromPath = useCallback(async (pathId: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const result = await pathApi.unenrollFromPath(pathId);
-      return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to unenroll from path';
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Get enrolled paths
-  const fetchEnrolledPaths = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const result = await pathApi.getEnrolledPaths();
-      setPaths(result.paths);
-      return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to fetch enrolled paths';
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Clear current path
-  const clearCurrentPath = useCallback(() => {
-    setCurrentPath(null);
-  }, []);
-
   return {
     paths,
     currentPath,
@@ -226,9 +177,6 @@ export function usePaths() {
     createPath,
     updatePath,
     deletePath,
-    enrollInPath,
-    unenrollFromPath,
-    fetchEnrolledPaths,
     clearSearch,
     clearCurrentPath,
     setError,

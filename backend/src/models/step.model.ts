@@ -2,12 +2,12 @@ import mongoose, { Document, Schema } from "mongoose";
 
 // Step interface
 export interface IStep extends Document {
-  title: string;
+  name: string;
   description: string;
   resourceLinks: string[];
   completedBy: mongoose.Types.ObjectId[];
   order: number;
-  pathId: mongoose.Types.ObjectId;
+  path: mongoose.Types.ObjectId;
   completionCount?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -16,7 +16,7 @@ export interface IStep extends Document {
 // Step schema
 const stepSchema = new Schema<IStep>(
   {
-    title: {
+    name: {
       type: String,
       required: [true, "Step title is required"],
       trim: true,
@@ -56,7 +56,7 @@ const stepSchema = new Schema<IStep>(
       required: [true, "Step order is required"],
       min: [1, "Step order must be at least 1"],
     },
-    pathId: {
+    path: {
       type: Schema.Types.ObjectId,
       ref: "Path",
       required: [true, "PathId reference is required"],
@@ -82,7 +82,7 @@ stepSchema.virtual("completionCount").get(function () {
 });
 
 // Compound index to ensure unique order within a path
-stepSchema.index({ pathId: 1, order: 1 }, { unique: true });
+stepSchema.index({ path: 1, order: 1 }, { unique: true });
 
 // Create and export the model
 const Step = mongoose.model<IStep>("Step", stepSchema);

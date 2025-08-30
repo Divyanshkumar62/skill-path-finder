@@ -84,9 +84,9 @@ export const pathApi = {
   },
 
   // Get path by ID
-  getPathById: async (id: string): Promise<{ path: Path; isEnrolled: boolean }> => {
+  getPathById: async (id: string): Promise<Path> => {
     const response = await api.get(`/paths/${id}`);
-    return response.data.data; // Return the full response with path and isEnrolled
+    return response.data.data.path;
   },
 
   // Create new path
@@ -116,22 +116,6 @@ export const pathApi = {
   getPathStats: async (): Promise<PathStats> => {
     const response = await api.get('/paths/stats');
     return response.data.data.stats; // Extract stats from wrapped response
-  },
-
-  // Enrollment methods
-  enrollInPath: async (pathId: string): Promise<{ path: Path }> => {
-    const response = await api.post(`/paths/${pathId}/enroll`);
-    return response.data.data;
-  },
-
-  unenrollFromPath: async (pathId: string): Promise<{ path: Path }> => {
-    const response = await api.delete(`/paths/${pathId}/enroll`);
-    return response.data.data;
-  },
-
-  getEnrolledPaths: async (): Promise<{ paths: Path[]; total: number }> => {
-    const response = await api.get('/paths/enrolled');
-    return response.data.data;
   },
 };
 

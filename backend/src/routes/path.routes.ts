@@ -15,9 +15,4 @@ router.get("/:id", PathController.getPathById);
 router.put("/:id", authenticate, PathController.updatePath);
 router.delete("/:id", authenticate, PathController.deletePath);
 
-// Enrollment routes (authentication required)
-router.post("/:id/enroll", authenticate, PathController.enrollInPath);
-router.delete("/:id/enroll", authenticate, PathController.unenrollFromPath);
-router.get("/enrolled", authenticate, PathController.getEnrolledPaths);
-
 export default router;

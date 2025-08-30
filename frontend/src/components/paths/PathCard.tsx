@@ -6,14 +6,12 @@ import Button from '../shared/Button';
 interface PathCardProps {
   path: Path;
   onEnroll?: (pathId: string) => void;
-  isEnrolled?: boolean;
   progress?: number;
 }
 
 const PathCard: React.FC<PathCardProps> = ({
   path,
   onEnroll,
-  isEnrolled = false,
   progress = 0,
 }) => {
   const handleEnroll = () => {
@@ -46,7 +44,7 @@ const PathCard: React.FC<PathCardProps> = ({
         </div>
       </div>
 
-      {isEnrolled && progress > 0 && (
+      {progress > 0 && (
         <div className="mb-4">
           <div className="flex items-center justify-between text-sm text-secondary-600 mb-2">
             <span>Progress</span>
@@ -69,24 +67,14 @@ const PathCard: React.FC<PathCardProps> = ({
           View Details →
         </Link>
 
-        {!isEnrolled ? (
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleEnroll}
-          >
-            Enroll Now
-          </Button>
-        ) : (
-          <Button
-            variant="success"
-            size="sm"
-            as={Link}
-            to={`/paths/${path.id}`}
-          >
-            {`Continue ->`}
-          </Button>
-        )}
+        <Button
+          variant="primary"
+          size="sm"
+          as={Link}
+          to={`/paths/${path.id}`}
+        >
+          Start Learning
+        </Button>
       </div>
     </div>
   );

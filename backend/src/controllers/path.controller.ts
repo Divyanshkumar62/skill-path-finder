@@ -158,15 +158,6 @@ export class PathController {
 
       const path = await PathService.getPathById(id);
 
-      // Check if user is enrolled in this path
-      let isEnrolled = false;
-      if (req.user) {
-        const user = await User.findById(req.user.id);
-        if (user && user.enrolledPaths) {
-          isEnrolled = user.enrolledPaths.some(pathId => pathId.toString() === id);
-        }
-      }
-
       sendSuccessResponse(res, "Path retrieved successfully", {
         path: {
           id: path!.id,
@@ -178,7 +169,6 @@ export class PathController {
           createdAt: path!.createdAt,
           updatedAt: path!.updatedAt,
         },
-        isEnrolled,
       });
     } catch (error: any) {
       // Handle specific errors
@@ -316,170 +306,6 @@ export class PathController {
       sendErrorResponse(
         res,
         "Failed to fetch paths by category",
-        HTTP_STATUS.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
-
-  /**
-   * Enroll in a path
-   * POST /api/paths/:id/enroll
-   */
-  static async enrollInPath(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { id } = req.params;
-
-      if (!req.user) {
-        sendErrorResponse(
-          res,
-          "User not authenticated",
-          HTTP_STATUS.UNAUTHORIZED
-        );
-        return;
-      }
-
-      // Check if path exists
-      const path = await PathService.getPathById(id);
-      if (!path) {
-        sendErrorResponse(res, "Path not found", HTTP_STATUS.NOT_FOUND);
-        return;
-      }
-
-      // Check if user is already enrolled
-      const user = await User.findById(req.user.id);
-      if (!user) {
-        sendErrorResponse(res, "User not found", HTTP_STATUS.NOT_FOUND);
-        return;
-      }
-
-      const isAlreadyEnrolled = user.enrolledPaths.some(pathId => pathId.toString() === id);
-      if (isAlreadyEnrolled) {
-        sendErrorResponse(res, "Already enrolled in this path", HTTP_STATUS.CONFLICT);
-        return;
-      }
-
-      // Add path to user's enrolled paths
-      user.enrolledPaths.push(path._id as any);
-      await user.save();
-
-      sendSuccessResponse(res, "Successfully enrolled in path", {
-        path: {
-          id: path.id,
-          title: path.title,
-          description: path.description,
-          category: path.category,
-        },
-      });
-    } catch (error: any) {
-      sendErrorResponse(
-        res,
-        "Failed to enroll in path",
-        HTTP_STATUS.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
-
-  /**
-   * Unenroll from a path
-   * DELETE /api/paths/:id/enroll
-   */
-  static async unenrollFromPath(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { id } = req.params;
-
-      if (!req.user) {
-        sendErrorResponse(
-          res,
-          "User not authenticated",
-          HTTP_STATUS.UNAUTHORIZED
-        );
-        return;
-      }
-
-      // Check if path exists
-      const path = await PathService.getPathById(id);
-      if (!path) {
-        sendErrorResponse(res, "Path not found", HTTP_STATUS.NOT_FOUND);
-        return;
-      }
-
-      // Remove path from user's enrolled paths
-      const user = await User.findById(req.user.id);
-      if (!user) {
-        sendErrorResponse(res, "User not found", HTTP_STATUS.NOT_FOUND);
-        return;
-      }
-
-      user.enrolledPaths = user.enrolledPaths.filter(pathId => pathId.toString() !== id);
-      await user.save();
-
-      sendSuccessResponse(res, "Successfully unenrolled from path", {
-        path: {
-          id: path.id,
-          title: path.title,
-          description: path.description,
-          category: path.category,
-        },
-      });
-    } catch (error: any) {
-      sendErrorResponse(
-        res,
-        "Failed to unenroll from path",
-        HTTP_STATUS.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
-
-  /**
-   * Get user's enrolled paths
-   * GET /api/paths/enrolled
-   */
-  static async getEnrolledPaths(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      if (!req.user) {
-        sendErrorResponse(
-          res,
-          "User not authenticated",
-          HTTP_STATUS.UNAUTHORIZED
-        );
-        return;
-      }
-
-      const user = await User.findById(req.user.id).populate('enrolledPaths');
-      if (!user) {
-        sendErrorResponse(res, "User not found", HTTP_STATUS.NOT_FOUND);
-        return;
-      }
-
-      sendSuccessResponse(res, "Enrolled paths retrieved successfully", {
-        paths: user.enrolledPaths.map((path: any) => ({
-          id: path.id,
-          title: path.title,
-          description: path.description,
-          category: path.category,
-          stepCount: path.stepCount,
-          steps: path.steps,
-          createdAt: path.createdAt,
-          updatedAt: path.updatedAt,
-        })),
-        total: user.enrolledPaths.length,
-      });
-    } catch (error: any) {
-      sendErrorResponse(
-        res,
-        "Failed to get enrolled paths",
         HTTP_STATUS.INTERNAL_SERVER_ERROR
       );
     }

@@ -13,8 +13,6 @@ const LearningPathsPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { paths, loading, searchPaths } = usePaths();
 
-  const [enrolledPaths, setEnrolledPaths] = useState<string[]>([]);
-
   // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
@@ -29,31 +27,6 @@ const LearningPathsPage: React.FC = () => {
       searchPaths({ limit: 20 });
     }
   }, [isAuthenticated, searchPaths]);
-
-  // Load enrolled paths from localStorage
-  useEffect(() => {
-    const storedEnrolledPaths = localStorage.getItem('enrolledPaths');
-    if (storedEnrolledPaths) {
-      try {
-        const parsed = JSON.parse(storedEnrolledPaths);
-        setEnrolledPaths(parsed);
-      } catch (error) {
-        console.error('Error parsing enrolled paths:', error);
-      }
-    }
-  }, []);
-
-  // Handle path enrollment
-  const handleEnroll = async (pathId: string) => {
-    try {
-      const updatedEnrolledPaths = [...enrolledPaths, pathId];
-      setEnrolledPaths(updatedEnrolledPaths);
-      localStorage.setItem('enrolledPaths', JSON.stringify(updatedEnrolledPaths));
-      console.log(`User enrolled in path: ${pathId}`);
-    } catch (error) {
-      console.error('Error enrolling in path:', error);
-    }
-  };
 
   // Filter paths by category/difficulty
   const recommendedPaths = paths.filter(path => path.category === 'web-development').slice(0, 8);
@@ -93,8 +66,6 @@ const LearningPathsPage: React.FC = () => {
               <div key={path.id} className="flex-shrink-0 w-80">
                 <PathCard
                   path={path}
-                  onEnroll={handleEnroll}
-                  isEnrolled={enrolledPaths.includes(path.id)}
                 />
               </div>
             ))}

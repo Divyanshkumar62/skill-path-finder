@@ -7,7 +7,8 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "seed": "ts-node-dev --transpile-only src/test-data.ts"
   },
   "keywords": [
     "nodejs",

@@ -42,7 +42,7 @@ const StepDetailPage: React.FC = () => {
         // Mock step data - replace with actual API call
         const mockStep = {
           id: stepId,
-          title: 'Introduction to Full Stack Development',
+          name: 'Introduction to Full Stack Development',
           description: 'Learn the fundamentals of full stack development including frontend and backend technologies.',
           content: `
 # Introduction to Full Stack Development
@@ -228,7 +228,7 @@ After completing this introduction, you'll be ready to dive deeper into specific
                 </span>
               </div>
               <h1 className="text-3xl font-bold text-secondary-900 mb-4">
-                {step.title}
+                {step.name}
               </h1>
               <p className="text-lg text-secondary-600 leading-relaxed">
                 {step.description}
