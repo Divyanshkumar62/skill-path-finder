@@ -163,6 +163,9 @@ export function usePaths() {
     try {
       setLoading(true);
       setError(null);
+    }
+  }
+  )
   return {
     paths,
     currentPath,
